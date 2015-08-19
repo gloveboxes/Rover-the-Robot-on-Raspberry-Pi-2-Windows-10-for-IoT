@@ -16,9 +16,6 @@ namespace Robot {
         private readonly int trig_Pin;
         private readonly int echo_Pin;
 
-        // distance between the rover and an obstacle
-
-        // stopwatch to time the echo on the distance sensor
         Stopwatch sw = new Stopwatch();
 
         public HCSR04(GpioController gpio, byte trig_Pin, byte echo_Pin) {
@@ -37,7 +34,7 @@ namespace Robot {
             double distance = DistanceReading();
             if (distance == -1) { return false; }
 
-            if (distance < 45.0) { return true; } //if something is within 45 cm
+            if (distance < 20.0) { return true; } //if something is within 45 cm
             else { return false; }
         }
 
@@ -74,7 +71,7 @@ namespace Robot {
             // speed of sound is 34300 cm per second or 34.3 cm per millisecond
             // since the sound waves traveled to the obstacle and back to the sensor
             // I am dividing by 2 to represent travel time to the obstacle
-            distanceToObstacle = sw.Elapsed.TotalMilliseconds * 34.3 / 2.0;
+            distanceToObstacle = sw.Elapsed.TotalMilliseconds * 34.3 / 2.0; 
 
             Debug.WriteLine("Distance: " + distanceToObstacle.ToString());
             return distanceToObstacle;

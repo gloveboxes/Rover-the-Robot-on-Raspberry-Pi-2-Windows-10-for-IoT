@@ -14,7 +14,9 @@ namespace Robot {
 
         Motor leftMotor;
         Motor rightMotor;
-        HCSR04 distance;
+        HCSR04 distanceRight;
+        HCSR04 distanceLeft;
+        HCSR04 distanceCenter;
 
         public void Run(IBackgroundTaskInstance taskInstance) {
 
@@ -22,27 +24,29 @@ namespace Robot {
 
             if (gpio == null) { return; }
 
-            leftMotor = new Motor(gpio, 27, 22);
-            rightMotor = new Motor(gpio, 6, 5);
-            distance = new HCSR04(gpio, 23, 24);
+            leftMotor = new Motor(gpio, 22, 24);
+            rightMotor = new Motor(gpio, 12, 25);
+            distanceRight = new HCSR04(gpio, 16, 26);
+            distanceLeft = new HCSR04(gpio, 27, 23);
+            distanceCenter = new HCSR04(gpio, 13, 6);
 
             // as long as the GPIO pins initialized properly, get moving
             while (true) {
                 // start moving forward
-                Forward(100);
+                Forward(20);
 
                 // as long as there is an obstacle in the way
-                while (distance.ObstacleDetected()) {
-                    Reverse(250);
-                    //TurnRight(100);
-                    //Reverse(150);
+                while (
+                    distanceRight.ObstacleDetected() || distanceLeft.ObstacleDetected() ||
+                    distanceCenter.ObstacleDetected()) {
+                    Reverse(300);
                     TurnRight(250);
                     FullStop();
                 }
             }
         }
 
-        private void Forward(uint milliseconds=0) {
+        private void Forward(uint milliseconds = 0) {
             leftMotor.Forward();
             rightMotor.Forward();
 
