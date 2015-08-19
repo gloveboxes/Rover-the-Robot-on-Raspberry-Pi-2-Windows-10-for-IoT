@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AdafruitMatrix;
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
@@ -18,6 +19,8 @@ namespace Robot {
         HCSR04 distanceLeft;
         HCSR04 distanceCenter;
 
+        Adafruit8x8Matrix matrix = new Adafruit8x8Matrix("matrix");
+
         public void Run(IBackgroundTaskInstance taskInstance) {
 
             _deferral = taskInstance.GetDeferral();
@@ -30,6 +33,8 @@ namespace Robot {
             distanceLeft = new HCSR04(gpio, 27, 23);
             distanceCenter = new HCSR04(gpio, 13, 6);
 
+
+
             // as long as the GPIO pins initialized properly, get moving
             while (true) {
                 // start moving forward
@@ -41,7 +46,7 @@ namespace Robot {
                     distanceCenter.ObstacleDetected()) {
                     Reverse(300);
                     TurnRight(250);
-                    FullStop();
+                    FullStop(50);
                 }
             }
         }
@@ -50,6 +55,8 @@ namespace Robot {
             leftMotor.Forward();
             rightMotor.Forward();
 
+            matrix.DrawSymbol(Adafruit8x8Matrix.Symbols.UpArrow);
+            matrix.FrameDraw();
             Task.Delay(TimeSpan.FromMilliseconds(milliseconds)).Wait();
 
             Debug.WriteLine("Forward");
@@ -59,8 +66,11 @@ namespace Robot {
             leftMotor.Backward();
             rightMotor.Backward();
 
+            matrix.DrawSymbol(Adafruit8x8Matrix.Symbols.DownArrow);
+            matrix.FrameDraw();
             Task.Delay(TimeSpan.FromMilliseconds(milliseconds)).Wait();
 
+            
             Debug.WriteLine("Reverse");
         }
 
@@ -70,6 +80,8 @@ namespace Robot {
             leftMotor.Backward();
             rightMotor.Forward();
 
+            matrix.DrawSymbol(Adafruit8x8Matrix.Symbols.LeftArrow);
+            matrix.FrameDraw();
             Task.Delay(TimeSpan.FromMilliseconds(milliseconds)).Wait();
 
             Debug.WriteLine("Left");
@@ -80,6 +92,8 @@ namespace Robot {
             leftMotor.Forward();
             rightMotor.Backward();
 
+            matrix.DrawSymbol(Adafruit8x8Matrix.Symbols.RightArrow);
+            matrix.FrameDraw();
             Task.Delay(TimeSpan.FromMilliseconds(milliseconds)).Wait();
 
             Debug.WriteLine("Right");
@@ -89,6 +103,8 @@ namespace Robot {
             leftMotor.Stop();
             rightMotor.Stop();
 
+            matrix.DrawSymbol(Adafruit8x8Matrix.Symbols.Block);
+            matrix.FrameDraw();
             Task.Delay(TimeSpan.FromMilliseconds(milliseconds)).Wait();
 
             Debug.WriteLine("Neutral");
