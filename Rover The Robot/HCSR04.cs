@@ -17,16 +17,9 @@ namespace Robot {
         private readonly int echo_Pin;
 
         // distance between the rover and an obstacle
-        double distanceToObstacle;
+
         // stopwatch to time the echo on the distance sensor
         Stopwatch sw = new Stopwatch();
-
-        // duration of the echo
-        TimeSpan elapsedTime;
-
-        // detect failures in the distance sensor
-        bool echoFailure = false;
-
 
         public HCSR04(GpioController gpio, byte trig_Pin, byte echo_Pin) {
             this.gpio = gpio;
@@ -41,25 +34,19 @@ namespace Robot {
         }
 
         public bool ObstacleDetected() {
-            // use the distance sensor to get a reading on objects in front of PiBot
-            if (!DistanceReading()) { return false; }
-            // if something is within 30 cm or 1 foot
-            // then it is an obstacle that needs to be avoided
-            if (distanceToObstacle < 45.0) {
-                //  Debug.WriteLine("Found at " + Convert.ToString(distanceToObstacle) + " cm");
-                return true;
-            }
-            else {
-                return false;
-            }
+            double distance = DistanceReading();
+            if (distance == -1) { return false; }
+
+            if (distance < 45.0) { return true; } //if something is within 45 cm
+            else { return false; }
         }
 
 
-        private bool DistanceReading() {
+        private double DistanceReading() {
+            double distanceToObstacle;
 
             //http://www.c-sharpcorner.com/UploadFile/167ad2/how-to-use-ultrasonic-sensor-hc-sr04-in-arduino/
             //http://www.modmypi.com/blog/hc-sr04-ultrasonic-range-sensor-on-the-raspberry-pi
-
 
             sw.Reset();                                       // reset the stopwatch
 
@@ -74,14 +61,15 @@ namespace Robot {
 
             while (echo.Read() == GpioPinValue.Low) {               // wait until the echo starts
                 if (sw.ElapsedMilliseconds > 1000) {
-                    return false;                                    // if you have waited for more than a second, then there was a failure in the echo
+                    return -1;                                    // if you have waited for more than a second, then there was a failure in the echo
                 }
             }
-            sw.Restart();           // echo is working properly, so restart the stop watch at zero
 
-            // stop the stopwatch when the echo stops
-            while (echo.Read() == GpioPinValue.High) ;
-            sw.Stop();
+            sw.Restart();           // echo is working properly, so restart the stop watch at zero
+       
+            while (echo.Read() == GpioPinValue.High) ;    
+
+            sw.Stop();  // stop the stopwatch when the echo stops
 
             // speed of sound is 34300 cm per second or 34.3 cm per millisecond
             // since the sound waves traveled to the obstacle and back to the sensor
@@ -89,7 +77,7 @@ namespace Robot {
             distanceToObstacle = sw.Elapsed.TotalMilliseconds * 34.3 / 2.0;
 
             Debug.WriteLine("Distance: " + distanceToObstacle.ToString());
-            return true;
+            return distanceToObstacle;
         }
     }
 }
