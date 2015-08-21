@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Windows.Devices.Gpio;
 
 namespace Robot {
-    class HCSR04 {
+    class HCSR04 : IDistance {
         private GpioController gpio;
 
         private GpioPin trig;
@@ -15,13 +15,18 @@ namespace Robot {
 
         private readonly int trig_Pin;
         private readonly int echo_Pin;
+        public double Distance { get; private set; }
+        public string Name { get; private set; }
+        public uint TriggerDistanceCMs { get; private set; }
 
         Stopwatch sw = new Stopwatch();
 
-        public HCSR04(GpioController gpio, byte trig_Pin, byte echo_Pin) {
+        public HCSR04(GpioController gpio, byte trig_Pin, byte echo_Pin, string name, uint triggerDistanceCMs) {
             this.gpio = gpio;
             this.trig_Pin = trig_Pin;
             this.echo_Pin = echo_Pin;
+            this.Name = name;
+            this.TriggerDistanceCMs = triggerDistanceCMs;
 
             trig = gpio.OpenPin(trig_Pin);
             echo = gpio.OpenPin(echo_Pin);
@@ -31,10 +36,11 @@ namespace Robot {
         }
 
         public bool ObstacleDetected() {
-            double distance = DistanceReading();
-            if (distance == -1) { return false; }
+            Distance = DistanceReading();
 
-            if (distance < 20.0) { return true; } //if something is within 45 cm
+            if (Distance < TriggerDistanceCMs) {
+                //Debug.WriteLine(Name + ": " + Distance.ToString());
+                return true; } 
             else { return false; }
         }
 
@@ -58,7 +64,7 @@ namespace Robot {
 
             while (echo.Read() == GpioPinValue.Low) {               // wait until the echo starts
                 if (sw.ElapsedMilliseconds > 1000) {
-                    return -1;                                    // if you have waited for more than a second, then there was a failure in the echo
+                    return double.MaxValue;                                    // if you have waited for more than a second, then there was a failure in the echo
                 }
             }
 
@@ -73,7 +79,7 @@ namespace Robot {
             // I am dividing by 2 to represent travel time to the obstacle
             distanceToObstacle = sw.Elapsed.TotalMilliseconds * 34.3 / 2.0; 
 
-            Debug.WriteLine("Distance: " + distanceToObstacle.ToString());
+
             return distanceToObstacle;
         }
     }

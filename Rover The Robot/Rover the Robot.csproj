@@ -96,7 +96,10 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DistanceSensor.cs" />
     <Compile Include="HCSR04.cs" />
+    <Compile Include="IDistance.cs" />
+    <Compile Include="IRDistance.cs" />
     <Compile Include="Motor.cs" />
     <Compile Include="StartupTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
