@@ -32,75 +32,71 @@ namespace Robot {
             rightMotor = new Motor(gpio, 12, 25);
 
             distanceSensors = new IDistance[] {
-                new HCSR04(gpio, 16, 26, "right", 25),
-                new HCSR04(gpio, 27, 23, "left", 25),
+                new HCSR04(gpio, 16, 26, "right", 20),
+                new HCSR04(gpio, 27, 23, "left", 20),
                 new HCSR04(gpio, 13, 6, "center", 30),
-                new IRDistance(gpio, 18, "center", 8)
+                new IRDistance(gpio, 18, "centerIR", 8)
             };
 
 
             // as long as the GPIO pins initialized properly, get moving
             while (true) {
                 // start moving forward   
-                turnDuration = 30;
+                turnDuration = 100;
 
                 closestObject = DetectObject();
 
                 while (closestObject != null) {
                     //turnDuration = (uint)(closestObject.TriggerDistanceCMs / closestObject.Distance * 30 + 10);
 
-                    if (closestObject.Distance < 10) { turnDuration = 120; }
-                    else if (closestObject.Distance < 15) { turnDuration = 90; }
-                    else if (closestObject.Distance < 20) { turnDuration = 60; }
+                    if (closestObject.Distance < 10) { turnDuration = 70; }
+                    else if (closestObject.Distance < 20) { turnDuration = 50; }
                     else if (closestObject.Distance < 30) { turnDuration = 30; }
+
+                    turnDuration = ((uint)rnd.Next((int)(turnDuration - 20), (int)(turnDuration + 20)));
 
                     Debug.WriteLine(closestObject.Name +  ", distance: " + closestObject.Distance.ToString() + ", turn:" + turnDuration.ToString());
 
-   
-
                     switch (closestObject.Name) {
                         case "left":
-                            //TurnRight((uint)rnd.Next(10, 80));
-                          //  TurnRight((uint)rnd.Next(10, (int)turnDuration)* 2);
-                            //TurnRight((uint)(rnd.Next(20, 80)));
-
                             TurnRight(turnDuration);
-                            Forward(10);
                             break;
-                        case "right":   
-                            //TurnLeft((uint)rnd.Next(10, (int)turnDuration)* 2);
-                            //TurnLeft((uint)(rnd.Next(20, 80)));
-                            TurnRight(turnDuration);
-                            Forward(10);
+                        case "right":
+                            TurnLeft(turnDuration);
                             break;
                         case "center":
-                            if (closestObject.Distance < 10) {
-                                Reverse(250);
-                            }
-
-
                             if (distanceSensors[0].Distance < distanceSensors[1].Distance) { // is right closer than left}
-                                //TurnLeft((uint)(10 + rnd.Next(40, 80)));
                                 TurnLeft(turnDuration);
                             }
                             else {
-                                //TurnRight((uint)(10 + rnd.Next(40, 80)));
+                                 TurnRight(turnDuration);
+                            }
+                            break;
+                        case "centerIR":
+                            Reverse(250);
+
+                            if (distanceSensors[0].Distance < distanceSensors[1].Distance) { // is right closer than left}
+                                TurnLeft(turnDuration);
+                            }
+                            else {
                                 TurnRight(turnDuration);
                             }
                             break;
+
                         default:
                             break;
                     }
+                    //Forward();
                     closestObject = DetectObject();
                 }
-                Forward(10);
+               Forward(50);
             }
         }
 
         private IDistance DetectObject() {
             double closestDistance = double.MaxValue;
             IDistance closestSensor = null;
-            
+
             foreach (var sensor in distanceSensors) {
                 if (sensor.ObstacleDetected()) {
                     if (sensor.Distance < closestDistance) {
@@ -109,6 +105,7 @@ namespace Robot {
                     }
                 }
             }
+
             return closestSensor;
         }
 
