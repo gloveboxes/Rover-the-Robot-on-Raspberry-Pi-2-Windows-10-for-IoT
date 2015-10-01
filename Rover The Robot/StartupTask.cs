@@ -22,7 +22,8 @@ namespace Robot {
 
         public void Run(IBackgroundTaskInstance taskInstance) {
             IDistance closestObject;
-            uint turnDuration;
+            uint turnDuration = 10;
+            bool sharpTurn = false;
 
             _deferral = taskInstance.GetDeferral();
 
@@ -32,64 +33,62 @@ namespace Robot {
             rightMotor = new Motor(gpio, 12, 25);
 
             distanceSensors = new IDistance[] {
-                new HCSR04(gpio, 16, 26, "right", 20),
-                new HCSR04(gpio, 27, 23, "left", 20),
-                new HCSR04(gpio, 13, 6, "center", 30),
-                new IRDistance(gpio, 18, "centerIR", 8)
+                new HCSR04(gpio, 16, 26, "right", 30),
+                new HCSR04(gpio, 27, 23, "left", 30),
+                new HCSR04(gpio, 13, 6, "center", 35),
+                new IRDistance(gpio, 18, "centerIR", 10)
             };
 
 
             // as long as the GPIO pins initialized properly, get moving
             while (true) {
                 // start moving forward   
-                turnDuration = 100;
 
                 closestObject = DetectObject();
 
                 while (closestObject != null) {
-                    //turnDuration = (uint)(closestObject.TriggerDistanceCMs / closestObject.Distance * 30 + 10);
 
-                    if (closestObject.Distance < 10) { turnDuration = 70; }
-                    else if (closestObject.Distance < 20) { turnDuration = 50; }
-                    else if (closestObject.Distance < 30) { turnDuration = 30; }
+                    sharpTurn = closestObject.Distance < 15 ? true : false;
 
-                    turnDuration = ((uint)rnd.Next((int)(turnDuration - 20), (int)(turnDuration + 20)));
+              //      turnDuration = ((uint)rnd.Next((int)(turnDuration - 20), (int)(turnDuration + 20)));
 
-                    Debug.WriteLine(closestObject.Name +  ", distance: " + closestObject.Distance.ToString() + ", turn:" + turnDuration.ToString());
+             //       Debug.WriteLine(closestObject.Name + ", distance: " + closestObject.Distance.ToString() + ", turn:" + turnDuration.ToString());
 
                     switch (closestObject.Name) {
                         case "left":
-                            TurnRight(turnDuration);
+                            TurnRight(sharpTurn, turnDuration);
                             break;
                         case "right":
-                            TurnLeft(turnDuration);
+                            TurnLeft(sharpTurn,turnDuration);
                             break;
                         case "center":
                             if (distanceSensors[0].Distance < distanceSensors[1].Distance) { // is right closer than left}
-                                TurnLeft(turnDuration);
+                                TurnLeft(sharpTurn, turnDuration);
                             }
                             else {
-                                 TurnRight(turnDuration);
+                                TurnRight(sharpTurn, turnDuration);
                             }
                             break;
                         case "centerIR":
-                            Reverse(250);
+                            FullStop(100);
+                            Reverse(150);
+                            FullStop(100);
 
                             if (distanceSensors[0].Distance < distanceSensors[1].Distance) { // is right closer than left}
-                                TurnLeft(turnDuration);
+                                TurnLeft(sharpTurn, (uint)rnd.Next(10, 30));
                             }
                             else {
-                                TurnRight(turnDuration);
+                                TurnRight(sharpTurn, (uint)rnd.Next(10, 30));
                             }
-                            break;
 
+                            break;
                         default:
                             break;
                     }
-                    //Forward();
+                    //Forward();      
                     closestObject = DetectObject();
                 }
-               Forward(50);
+                Forward();
             }
         }
 
@@ -128,15 +127,22 @@ namespace Robot {
             matrix.FrameDraw();
             Task.Delay(TimeSpan.FromMilliseconds(milliseconds)).Wait();
 
-            
+
             //Debug.WriteLine("Reverse");
         }
 
 
-        private void TurnLeft(uint milliseconds = 0) {
+        private void TurnLeft(bool sharpTurn, uint milliseconds = 0) {
             // spin the left motor in the reverse direction
-            leftMotor.Backward();
+
             rightMotor.Forward();
+
+            if (sharpTurn) {
+                leftMotor.Backward();
+            }
+            else {
+                leftMotor.Stop();
+            }            
 
             matrix.DrawSymbol(Adafruit8x8Matrix.Symbols.LeftArrow);
             matrix.FrameDraw();
@@ -146,9 +152,15 @@ namespace Robot {
         }
 
 
-        private void TurnRight(uint milliseconds = 0) {
+        private void TurnRight(bool sharpTurn, uint milliseconds = 0) {
             leftMotor.Forward();
-            rightMotor.Backward();
+
+            if (sharpTurn) {
+                rightMotor.Backward();
+            }
+            else {
+                rightMotor.Stop();
+            }
 
             matrix.DrawSymbol(Adafruit8x8Matrix.Symbols.RightArrow);
             matrix.FrameDraw();

@@ -63,7 +63,7 @@ namespace Robot {
             sw.Start();                                             //start the stopwatch
 
             while (echo.Read() == GpioPinValue.Low) {               // wait until the echo starts
-                if (sw.ElapsedMilliseconds > 1000) {
+                if (sw.ElapsedMilliseconds > 500) {
                     return double.MaxValue;                                    // if you have waited for more than a second, then there was a failure in the echo
                 }
             }
