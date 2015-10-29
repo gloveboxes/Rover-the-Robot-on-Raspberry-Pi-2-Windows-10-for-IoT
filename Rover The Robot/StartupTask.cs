@@ -1,13 +1,16 @@
-﻿using AdafruitMatrix;
+﻿using Glovebox.Graphics.Components;
+using Glovebox.Graphics.Drivers;
+using Glovebox.IoT.Devices.Actuators;
+using Robot.Sensors;
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Devices.Gpio;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
 
-namespace Robot {
+namespace Robot
+{
     public sealed class StartupTask : IBackgroundTask {
         BackgroundTaskDeferral _deferral;
 
@@ -17,7 +20,7 @@ namespace Robot {
         Motor rightMotor;
         IDistance[] distanceSensors;
 
-        Adafruit8x8Matrix matrix = new Adafruit8x8Matrix("matrix");
+        LED8x8Matrix  matrix = new LED8x8Matrix(new Ht16K33());
         Random rnd = new Random();
 
         public void Run(IBackgroundTaskInstance taskInstance) {
@@ -29,14 +32,14 @@ namespace Robot {
 
             if (gpio == null) { return; }
 
-            leftMotor = new Motor(gpio, 22, 24);
-            rightMotor = new Motor(gpio, 12, 25);
+            leftMotor = new Motor(22, 24);
+            rightMotor = new Motor(12, 25);
 
             distanceSensors = new IDistance[] {
-                new HCSR04(gpio, 16, 26, "right", 30),
-                new HCSR04(gpio, 27, 23, "left", 30),
-                new HCSR04(gpio, 13, 6, "center", 35),
-                new IRDistance(gpio, 18, "centerIR", 10)
+                new UltraSound(16, 26, "right", 30),
+                new UltraSound(27, 23, "left", 30),
+                new UltraSound(13, 6, "center", 35),
+                new InfraRed(18, "centerIR", 10)
             };
 
 
@@ -112,7 +115,7 @@ namespace Robot {
             leftMotor.Forward();
             rightMotor.Forward();
 
-            matrix.DrawSymbol(Adafruit8x8Matrix.Symbols.UpArrow);
+            matrix.DrawSymbol(LED8x8Matrix.Symbols.UpArrow);
             matrix.FrameDraw();
             Task.Delay(TimeSpan.FromMilliseconds(milliseconds)).Wait();
 
@@ -123,7 +126,7 @@ namespace Robot {
             leftMotor.Backward();
             rightMotor.Backward();
 
-            matrix.DrawSymbol(Adafruit8x8Matrix.Symbols.DownArrow);
+            matrix.DrawSymbol(LED8x8Matrix.Symbols.DownArrow);
             matrix.FrameDraw();
             Task.Delay(TimeSpan.FromMilliseconds(milliseconds)).Wait();
 
@@ -144,7 +147,7 @@ namespace Robot {
                 leftMotor.Stop();
             }            
 
-            matrix.DrawSymbol(Adafruit8x8Matrix.Symbols.LeftArrow);
+            matrix.DrawSymbol(LED8x8Matrix.Symbols.LeftArrow);
             matrix.FrameDraw();
             Task.Delay(TimeSpan.FromMilliseconds(milliseconds)).Wait();
 
@@ -162,7 +165,7 @@ namespace Robot {
                 rightMotor.Stop();
             }
 
-            matrix.DrawSymbol(Adafruit8x8Matrix.Symbols.RightArrow);
+            matrix.DrawSymbol(LED8x8Matrix.Symbols.RightArrow);
             matrix.FrameDraw();
             Task.Delay(TimeSpan.FromMilliseconds(milliseconds)).Wait();
 
@@ -173,7 +176,7 @@ namespace Robot {
             leftMotor.Stop();
             rightMotor.Stop();
 
-            matrix.DrawSymbol(Adafruit8x8Matrix.Symbols.Block);
+            matrix.DrawSymbol(LED8x8Matrix.Symbols.Block);
             matrix.FrameDraw();
             Task.Delay(TimeSpan.FromMilliseconds(milliseconds)).Wait();
 

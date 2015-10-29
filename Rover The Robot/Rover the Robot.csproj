@@ -96,11 +96,9 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DistanceSensor.cs" />
-    <Compile Include="HCSR04.cs" />
-    <Compile Include="IDistance.cs" />
-    <Compile Include="IRDistance.cs" />
-    <Compile Include="Motor.cs" />
+    <Compile Include="Sensors\UltraSound.cs" />
+    <Compile Include="Sensors\IDistance.cs" />
+    <Compile Include="Sensors\InfraRed.cs" />
     <Compile Include="StartupTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -124,12 +122,6 @@
     <SDKReference Include="WindowsIoT, Version=10.0.10240.0">
       <Name>Windows IoT Extensions for the UWP</Name>
     </SDKReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Adafruit\Adafruit.csproj">
-      <Project>{06d3b72c-f388-4db0-9644-748cdac9b316}</Project>
-      <Name>Adafruit</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
