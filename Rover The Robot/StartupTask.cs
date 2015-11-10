@@ -20,7 +20,7 @@ namespace Robot
         Motor rightMotor;
         IDistance[] distanceSensors;
 
-        LED8x8Matrix  matrix = new LED8x8Matrix(new Ht16K33());
+     //   LED8x8Matrix  matrix = new LED8x8Matrix(new Ht16K33());
         Random rnd = new Random();
 
         public void Run(IBackgroundTaskInstance taskInstance) {
@@ -32,14 +32,14 @@ namespace Robot
 
             if (gpio == null) { return; }
 
-            leftMotor = new Motor(22, 24);
-            rightMotor = new Motor(12, 25);
+            leftMotor = new Motor(23, 22);
+            rightMotor = new Motor(24, 25);
 
             distanceSensors = new IDistance[] {
-                new UltraSound(16, 26, "right", 30),
-                new UltraSound(27, 23, "left", 30),
+                new UltraSound(26, 20, "right", 30),
+                new UltraSound(12, 5, "left", 30),
                 new UltraSound(13, 6, "center", 35),
-                new InfraRed(18, "centerIR", 10)
+           //     new InfraRed(18, "centerIR", 10)
             };
 
 
@@ -115,8 +115,8 @@ namespace Robot
             leftMotor.Forward();
             rightMotor.Forward();
 
-            matrix.DrawSymbol(LED8x8Matrix.Symbols.UpArrow);
-            matrix.FrameDraw();
+            //matrix.DrawSymbol(LED8x8Matrix.Symbols.UpArrow);
+            //matrix.FrameDraw();
             Task.Delay(TimeSpan.FromMilliseconds(milliseconds)).Wait();
 
             //Debug.WriteLine("Forward");
@@ -126,8 +126,8 @@ namespace Robot
             leftMotor.Backward();
             rightMotor.Backward();
 
-            matrix.DrawSymbol(LED8x8Matrix.Symbols.DownArrow);
-            matrix.FrameDraw();
+            //matrix.DrawSymbol(LED8x8Matrix.Symbols.DownArrow);
+            //matrix.FrameDraw();
             Task.Delay(TimeSpan.FromMilliseconds(milliseconds)).Wait();
 
 
@@ -147,8 +147,8 @@ namespace Robot
                 leftMotor.Stop();
             }            
 
-            matrix.DrawSymbol(LED8x8Matrix.Symbols.LeftArrow);
-            matrix.FrameDraw();
+            //matrix.DrawSymbol(LED8x8Matrix.Symbols.LeftArrow);
+            //matrix.FrameDraw();
             Task.Delay(TimeSpan.FromMilliseconds(milliseconds)).Wait();
 
             //Debug.WriteLine("Left");
@@ -165,8 +165,8 @@ namespace Robot
                 rightMotor.Stop();
             }
 
-            matrix.DrawSymbol(LED8x8Matrix.Symbols.RightArrow);
-            matrix.FrameDraw();
+            //matrix.DrawSymbol(LED8x8Matrix.Symbols.RightArrow);
+            //matrix.FrameDraw();
             Task.Delay(TimeSpan.FromMilliseconds(milliseconds)).Wait();
 
             //Debug.WriteLine("Right");
@@ -176,8 +176,8 @@ namespace Robot
             leftMotor.Stop();
             rightMotor.Stop();
 
-            matrix.DrawSymbol(LED8x8Matrix.Symbols.Block);
-            matrix.FrameDraw();
+            //matrix.DrawSymbol(LED8x8Matrix.Symbols.Block);
+            //matrix.FrameDraw();
             Task.Delay(TimeSpan.FromMilliseconds(milliseconds)).Wait();
 
             //Debug.WriteLine("Neutral");
