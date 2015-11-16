@@ -99,7 +99,7 @@ namespace AdapterLib
 
             this.DeviceName = GetDeviceName();
             this.Vendor = "glovebox";
-            this.AdapterName = "makerden";
+            this.AdapterName = "rover";
 
             // the adapter prefix must be something like "com.mycompany" (only alpha num and dots)
             // it is used by the Device System Bridge as root string for all services and interfaces it exposes
@@ -160,25 +160,8 @@ namespace AdapterLib
             myDevice.Methods.Add(new AdapterMethod("left", "Turn left", 0));
             myDevice.Methods.Add(new AdapterMethod("right", "Turn right", 0));
             myDevice.Methods.Add(new AdapterMethod("backward", "Backwards", 0));
-            myDevice.Methods.Add(new AdapterMethod("joke", "Tell me a joke", 0));
-            myDevice.Methods.Add(new AdapterMethod("banner", "Banner Control", 0));
-
-
-            AdapterProperty lightProperty = new AdapterProperty("Light", "");
-            lightProperty.Attributes.Add(NewAttribute("Mode", "off", E_ACCESS_TYPE.ACCESS_READWRITE));
-            myDevice.Properties.Add(lightProperty);
-
-
-            AdapterProperty speechProperty = new AdapterProperty("Speech", "");
-            speechProperty.Attributes.Add(NewAttribute("Volume", 4, E_ACCESS_TYPE.ACCESS_READWRITE));
-            speechProperty.Attributes.Add(NewAttribute("Message", "Tell me a joke", E_ACCESS_TYPE.ACCESS_READWRITE));
-            myDevice.Properties.Add(speechProperty);
-
-            AdapterProperty bannerProperty = new AdapterProperty("Banner", "");
-            bannerProperty.Attributes.Add(NewAttribute("Pre", "Maker Den", E_ACCESS_TYPE.ACCESS_READWRITE));
-            bannerProperty.Attributes.Add(NewAttribute("Post", "Data Den", E_ACCESS_TYPE.ACCESS_READWRITE));
-            bannerProperty.Attributes.Add(NewAttribute("Calibration", 0, E_ACCESS_TYPE.ACCESS_READWRITE));
-            myDevice.Properties.Add(bannerProperty);
+            myDevice.Methods.Add(new AdapterMethod("manual", "manual", 0));
+            myDevice.Methods.Add(new AdapterMethod("autonomous", "autonomous", 0));
 
 
             devices.Add(myDevice);
