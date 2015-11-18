@@ -154,6 +154,10 @@ namespace AdapterLib
             robotProperty.Attributes.Add(NewAttribute("Speed", 5, E_ACCESS_TYPE.ACCESS_READWRITE));
             myDevice.Properties.Add(robotProperty);
 
+            AdapterProperty speechProperty = new AdapterProperty("Speech", "");
+            speechProperty.Attributes.Add(NewAttribute("Message", "Tell me a joke", E_ACCESS_TYPE.ACCESS_READWRITE));
+            myDevice.Properties.Add(speechProperty);
+
 
             myDevice.Methods.Add(new AdapterMethod("stop", "Stop", 0));
             myDevice.Methods.Add(new AdapterMethod("forward", "Forward", 0));
@@ -162,6 +166,7 @@ namespace AdapterLib
             myDevice.Methods.Add(new AdapterMethod("backward", "Backwards", 0));
             myDevice.Methods.Add(new AdapterMethod("manual", "manual", 0));
             myDevice.Methods.Add(new AdapterMethod("autonomous", "autonomous", 0));
+            myDevice.Methods.Add(new AdapterMethod("speak", "speak", 0));
 
 
             devices.Add(myDevice);
