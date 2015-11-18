@@ -26,7 +26,9 @@ namespace Robot
             speaking = true;
 
             SpeechSynthesisStream stream = await synth.SynthesizeTextToStreamAsync(message);
+
             mediaEngine.PlayStream(stream);
+
             await Task.Delay(1000);
             speaking = false;
         }
