@@ -7,15 +7,15 @@
         public uint TriggerDistanceCMs { get; private set; }
 
 
-        public UltraSound(byte trig_Pin, byte echo_Pin, string name, uint triggerDistanceCMs): base(trig_Pin, echo_Pin) {
+        public UltraSound(byte trig_Pin, byte echo_Pin, string name, int triggerDistanceCMs): base(trig_Pin, echo_Pin) {
             this.Name = name;
-            this.TriggerDistanceCMs = triggerDistanceCMs;
+            this.TriggerDistanceCMs = (uint)triggerDistanceCMs;
         }
 
         public bool ObstacleDetected() {
-            double distance = 0.0;
-            bool detected = GetDistanceToObstacle(ref distance);
-            Distance = distance;
+            Distance = GetDistance(UnitsNet.Length.FromCentimeters(TriggerDistanceCMs)).Centimeters;
+
+            bool detected = Distance != 0;
 
             if (detected)
             {
